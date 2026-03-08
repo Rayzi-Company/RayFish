@@ -22,14 +22,6 @@ body{font-family: Arial, sans-serif; margin:0; padding:0;}
   display: none;
   z-index: 2000;
   font-weight: bold;
-  font-size: 16px;
-  opacity: 0;
-  transition: opacity 0.5s, transform 0.5s;
-}
-#message.show{
-  display: block;
-  opacity: 1;
-  transform: translateX(50%) translateY(0);
 }
 
 /* Кнопка корзини */
@@ -78,48 +70,16 @@ body{font-family: Arial, sans-serif; margin:0; padding:0;}
   color: #0a5f8f;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
-.cart-item{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 12px 0;
-  padding: 6px 12px;
-  border-radius: 10px;
-  background: #f1f1f1;
-  transition: all 0.3s ease;
-}
-.cart-item:hover{
-  background: #e0f7fa;
-  transform: scale(1.02);
-}
-.remove-btn{
-  background: #e53935;
-  color: white;
+
+/* Хрестик для закриття корзини */
+.cart-sidebar #closeCart{
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  background: none;
   border: none;
-  padding: 5px 10px;
-  border-radius: 8px;
+  font-size: 26px;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-.remove-btn:hover{
-  background: #c62828;
-  transform: scale(1.1);
-}
-.checkout-btn{
-  display: block;
-  text-align: center;
-  background: #0a5f8f;
-  color: white;
-  padding: 12px;
-  border-radius: 12px;
-  text-decoration: none;
-  margin-top: 20px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-.checkout-btn:hover{
-  background: #083f60;
-  transform: scale(1.05);
 }
 
 /* Сторінка товарів */
@@ -179,23 +139,9 @@ body{font-family: Arial, sans-serif; margin:0; padding:0;}
 
 <div class="container">
 <h2>Великий вибір воблерів</h2>
-<div class="products">
 
-<!-- 45 карточок -->
-<!-- Приклад шаблону: -->
-<!-- <div class="card"><img src="images/lure1.png" alt="Воблер 1"><h3>Воблер 1</h3><div class="price">50 грн</div><a href="#" class="buy-button">Купити</a></div> -->
+<div class="products" id="products"></div>
 
-<!-- Додано всі 45 -->
-${Array.from({length:45}, (_,i)=>`
-<div class="card">
-  <img src="images/lure${i+1}.png" alt="Воблер ${i+1}">
-  <h3>Воблер ${i+1}</h3>
-  <div class="price">50 грн</div>
-  <a href="#" class="buy-button">Купити</a>
-</div>
-`).join('')}
-
-</div>
 </div>
 
 <!-- Повідомлення -->
@@ -204,11 +150,12 @@ ${Array.from({length:45}, (_,i)=>`
 <!-- Кнопка корзини -->
 <button class="cart-toggle-btn">🛒 Корзина</button>
 
-<!-- Бокова корзина -->
+<!-- Бокова корзина з хрестиком -->
 <div class="cart-sidebar" id="cartSidebar">
-  <h2>Корзина</h2>
-  <div id="cartItems"></div>
-  <a href="checkout.html" class="checkout-btn">Оформити</a>
+<button id="closeCart">✖</button>
+<h2>Корзина</h2>
+<div id="cartItems"></div>
+<a href="checkout.html" class="checkout-btn">Оформити</a>
 </div>
 
 <footer>
@@ -216,44 +163,52 @@ ${Array.from({length:45}, (_,i)=>`
 </footer>
 
 <script>
-// Повідомлення
-function showMessage(text){
-  const msg = document.getElementById('message');
-  msg.innerText=text;
-  msg.classList.add('show');
-  setTimeout(()=>{
-    msg.classList.remove('show');
-  },1800);
+// Генерація 45 карточок
+const products = document.getElementById("products");
+for(let i=1;i<=45;i++){
+  products.innerHTML += `
+  <div class="card">
+    <img src="images/lure${i}.png" alt="Воблер ${i}">
+    <h3>Воблер ${i}</h3>
+    <div class="price">50 грн</div>
+    <a href="#" class="buy-button">Купити</a>
+  </div>`;
 }
 
-// Корзина
-const cartBtn = document.querySelector('.cart-toggle-btn');
-const cartSidebar = document.getElementById('cartSidebar');
-const cartItemsContainer = document.getElementById('cartItems');
+// Повідомлення
+function showMessage(text){
+  const msg = document.getElementById("message");
+  msg.innerText = text;
+  msg.style.display = "block";
+  setTimeout(()=> msg.style.display="none", 1500);
+}
 
-cartBtn.addEventListener('click', () => {
-  cartSidebar.classList.toggle('active');
-});
+// Відкриття/закриття корзини
+const cartBtn = document.querySelector(".cart-toggle-btn");
+const cartSidebar = document.getElementById("cartSidebar");
+const cartItemsContainer = document.getElementById("cartItems");
+const closeCart = document.getElementById("closeCart");
 
-document.querySelectorAll('.buy-button').forEach(button=>{
-  button.addEventListener('click', e=>{
+cartBtn.onclick = () => cartSidebar.classList.toggle("active");
+closeCart.onclick = () => cartSidebar.classList.remove("active");
+
+// Додавання товарів у корзину
+document.addEventListener("click", function(e){
+  if(e.target.classList.contains("buy-button")){
     e.preventDefault();
-    const card = button.parentElement;
-    const title = card.querySelector('h3').innerText;
-    const price = card.querySelector('.price').innerText;
+    const card = e.target.parentElement;
+    const title = card.querySelector("h3").innerText;
+    const price = card.querySelector(".price").innerText;
 
-    const cartItem = document.createElement('div');
-    cartItem.classList.add('cart-item');
-    cartItem.innerHTML = `<span>${title} - ${price}</span>
-                          <button class="remove-btn">×</button>`;
-    cartItemsContainer.appendChild(cartItem);
+    const item = document.createElement("div");
+    item.classList.add("cart-item");
+    item.innerHTML = `<span>${title} - ${price}</span> <button>×</button>`;
 
-    showMessage('Товар додано у кошик');
+    item.querySelector("button").onclick = () => item.remove();
 
-    cartItem.querySelector('.remove-btn').addEventListener('click', ()=>{
-      cartItem.remove();
-    });
-  });
+    cartItemsContainer.appendChild(item);
+    showMessage("Товар додано у кошик");
+  }
 });
 </script>
 
