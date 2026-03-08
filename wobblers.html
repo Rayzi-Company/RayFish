@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>RayFish — Воблери</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* Загальні стилі */
+body{font-family: Arial, sans-serif; margin:0; padding:0;}
+
+/* Повідомлення */
+#message{
+  position: fixed;
+  top: 20px;
+  right: 50%;
+  transform: translateX(50%);
+  background: linear-gradient(135deg,#4caf50,#81c784);
+  color: white;
+  padding: 12px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 2000;
+  font-weight: bold;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.5s, transform 0.5s;
+}
+#message.show{
+  display: block;
+  opacity: 1;
+  transform: translateX(50%) translateY(0);
+}
+
+/* Кнопка корзини */
+.cart-toggle-btn{
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  background: #0a5f8f;
+  color: white;
+  padding: 14px 18px;
+  border-radius: 12px 0 0 12px;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+.cart-toggle-btn:hover{
+  background: #083f60;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Бокова корзина */
+.cart-sidebar{
+  position: fixed;
+  top: 0;
+  right: -55%;
+  width: 55%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 20px 0 0 20px;
+  box-shadow: -5px 0 20px rgba(0,0,0,0.3);
+  padding: 25px;
+  box-sizing: border-box;
+  transition: right 0.5s ease;
+  z-index: 999;
+  overflow-y: auto;
+}
+.cart-sidebar.active{
+  right: 0;
+}
+.cart-sidebar h2{
+  margin-top: 0;
+  font-size: 22px;
+  text-align: center;
+  color: #0a5f8f;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+.cart-item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: #f1f1f1;
+  transition: all 0.3s ease;
+}
+.cart-item:hover{
+  background: #e0f7fa;
+  transform: scale(1.02);
+}
+.remove-btn{
+  background: #e53935;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.remove-btn:hover{
+  background: #c62828;
+  transform: scale(1.1);
+}
+.checkout-btn{
+  display: block;
+  text-align: center;
+  background: #0a5f8f;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  margin-top: 20px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+.checkout-btn:hover{
+  background: #083f60;
+  transform: scale(1.05);
+}
+
+/* Сторінка товарів */
+.container{
+  width: 90%;
+  margin: auto;
+}
+.products{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.card{
+  flex: 1 1 calc(33.333% - 20px);
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+.card img{
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.price{
+  margin: 10px 0;
+  font-weight: bold;
+  color: #0a5f8f;
+}
+.buy-button{
+  display:inline-block;
+  background:#0a5f8f;
+  color:white;
+  padding:8px 15px;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:bold;
+  transition:0.3s;
+}
+.buy-button:hover{
+  background:#083f60;
+  transform:scale(1.05);
+}
+</style>
+</head>
+<body>
+
+<header>🎣 RayFish — Воблери</header>
+
+<nav>
+<a href="index.html">Головна</a>
+<a href="products.html">Товари</a>
+<a href="sales.html">Акції</a>
+<a href="contacts.html">Контакти</a>
+</nav>
+
+<div class="container">
+<h2>Великий вибір воблерів</h2>
+<div class="products">
+
+<!-- 45 карточок -->
+<!-- Приклад шаблону: -->
+<!-- <div class="card"><img src="images/lure1.png" alt="Воблер 1"><h3>Воблер 1</h3><div class="price">50 грн</div><a href="#" class="buy-button">Купити</a></div> -->
+
+<!-- Додано всі 45 -->
+${Array.from({length:45}, (_,i)=>`
+<div class="card">
+  <img src="images/lure${i+1}.png" alt="Воблер ${i+1}">
+  <h3>Воблер ${i+1}</h3>
+  <div class="price">50 грн</div>
+  <a href="#" class="buy-button">Купити</a>
+</div>
+`).join('')}
+
+</div>
+</div>
+
+<!-- Повідомлення -->
+<div id="message"></div>
+
+<!-- Кнопка корзини -->
+<button class="cart-toggle-btn">🛒 Корзина</button>
+
+<!-- Бокова корзина -->
+<div class="cart-sidebar" id="cartSidebar">
+  <h2>Корзина</h2>
+  <div id="cartItems"></div>
+  <a href="checkout.html" class="checkout-btn">Оформити</a>
+</div>
+
+<footer>
+Телефон: +380960839665
+</footer>
+
+<script>
+// Повідомлення
+function showMessage(text){
+  const msg = document.getElementById('message');
+  msg.innerText=text;
+  msg.classList.add('show');
+  setTimeout(()=>{
+    msg.classList.remove('show');
+  },1800);
+}
+
+// Корзина
+const cartBtn = document.querySelector('.cart-toggle-btn');
+const cartSidebar = document.getElementById('cartSidebar');
+const cartItemsContainer = document.getElementById('cartItems');
+
+cartBtn.addEventListener('click', () => {
+  cartSidebar.classList.toggle('active');
+});
+
+document.querySelectorAll('.buy-button').forEach(button=>{
+  button.addEventListener('click', e=>{
+    e.preventDefault();
+    const card = button.parentElement;
+    const title = card.querySelector('h3').innerText;
+    const price = card.querySelector('.price').innerText;
+
+    const cartItem = document.createElement('div');
+    cartItem.classList.add('cart-item');
+    cartItem.innerHTML = `<span>${title} - ${price}</span>
+                          <button class="remove-btn">×</button>`;
+    cartItemsContainer.appendChild(cartItem);
+
+    showMessage('Товар додано у кошик');
+
+    cartItem.querySelector('.remove-btn').addEventListener('click', ()=>{
+      cartItem.remove();
+    });
+  });
+});
+</script>
+
+</body>
+</html>
